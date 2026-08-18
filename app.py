@@ -75,7 +75,7 @@ lista_alunos = [
         </tr>
         {% endfor %}
     </tbody>
-    </table>
+    </table> 
     
     
 context = {'msg': 'Teste', 'lista_alunos': alunos}
