@@ -1,9 +1,11 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, flash
 from dao.aluno_dao import AlunoDAO
 from dao.professor_dao import ProfessorDAO
 from dao.db_config import get_connection
 
 app = Flask(__name__)
+
+app.secret_key = "uma_chave_muito_secreta_e_unica"
 
 @app.route('/')
 def home():
@@ -20,6 +22,31 @@ def lista_aluno():
     dao = AlunoDAO()
     lista = dao.listar()
     return render_template('aluno/lista.html',lista=lista)
+
+@app.route('/aluno/form')
+def form_aluno():
+   return render_template('aluno/form.html',aluno=None)
+
+
+@app.route('/aluno/salvar/', methods=['POST'])  # Inserção
+def salvar_aluno(id=None):
+    nome = request.form['nome']
+    idade = request.form['idade']
+    cidade = request.form['cidade']
+    dao = AlunoDAO()
+    result = dao.salvar(id, nome, idade, cidade) 
+    if result["status"] == "ok":
+        flash("Aluno salvo com sucesso!", "success")
+    else:
+        flash(result["mensagem"], "danger")
+
+
+    return redirect('/aluno')
+
+
+
+
+
 
 
 @app.route('/professor')
