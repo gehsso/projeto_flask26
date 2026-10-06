@@ -1,5 +1,7 @@
-from flask import Flask, render_template
-import sqlite3
+from flask import Flask, render_template, request
+from dao.aluno_dao import AlunoDAO
+from dao.professor_dao import ProfessorDAO
+from dao.db_config import get_connection
 
 app = Flask(__name__)
 
@@ -15,22 +17,41 @@ def sobre():
 
 @app.route('/aluno')
 def lista_aluno():
-    DB_PATH = "banco_escola.db" # Caminho do arquivo
-    conn = sqlite3.connect(DB_PATH) # Cria/conecta ao BD
-    cursor = conn.cursor() # Cursor - "caneta" para escrever SQL
-    cursor.execute('select id, nome, idade, cidade from aluno') #Executa consulta SQL
-    lista = cursor.fetchall() # Retorna lista de tuplas
+    dao = AlunoDAO()
+    lista = dao.listar()
     return render_template('aluno/lista.html',lista=lista)
 
 
 @app.route('/professor')
 def lista_professor():
-    DB_PATH = "banco_escola.db" # Caminho do arquivo
-    conn = sqlite3.connect(DB_PATH) # Cria/conecta ao BD
-    cursor = conn.cursor() # Cursor - "caneta" para escrever SQL
-    cursor.execute('select id, nome, disciplina from professor') #Executa consulta SQL
-    lista = cursor.fetchall() # Retorna lista de tuplas
+    dao = ProfessorDAO()
+    lista = dao.listar()
     return render_template('professor/lista.html',lista=lista)
+
+
+@app.route('/saudacao1/<nome>')
+def saudacao1(nome):
+    # salvar no banco
+    return render_template('saudacao/saudacao.html',valor_recebido=nome)
+
+
+
+@app.route('/saudacao2/')
+def saudacao2():
+    nome = request.args.get('nome')
+
+    return render_template('saudacao/saudacao.html',valor_recebido=nome)
+
+
+
+@app.route('/login', methods=['POST'])
+def login():
+    usuario = request.form['usuario']
+    senha = request.form['senha']
+    email = request.form['email']
+    dados = f"Usuário: {usuario}, Senha: {senha}, E-mail: {email}"
+    return render_template('saudacao/saudacao.html',valor_recebido=dados)
+
 
 
 if __name__ == '__main__':
